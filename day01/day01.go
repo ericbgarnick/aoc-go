@@ -11,18 +11,18 @@ import (
 // Part1 sums the 2-digit number formed from the first and last digit
 // from each line in the input data.
 func Part1() {
-	total := Solution(findCalibrationValueDigitsOnly)
+	total := solution(findCalibrationValueDigitsOnly)
 	fmt.Printf("PART 1: %d\n", total)
 }
 
 // Part2 sums the 2-digit number formed from the first and last
 // digit or number word from each line in the input data.
 func Part2() {
-	total := Solution(findCalibrationValueWithWords)
+	total := solution(findCalibrationValueWithWords)
 	fmt.Printf("PART 2: %d\n", total)
 }
 
-func Solution(searchFunc func(string) (int, error)) int {
+func solution(searchFunc func(string) (int, error)) int {
 	readFile, err := os.Open("day01/data.txt")
 	if err != nil {
 		panic(err)

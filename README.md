@@ -4,6 +4,6 @@ Solutions to the [2023 Advent of Code](https://adventofcode.com/2023) challenges
 
 To run:
 ```shell
-go run . <day number>
+go run . -day <day number>
 ```
 where `<day number>` is an integer for the day to run.
