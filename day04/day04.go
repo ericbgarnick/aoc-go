@@ -20,13 +20,13 @@ var (
 	playerNumbersPattern  = regexp.MustCompile(`\| ([\d ]+)$`)
 )
 
-// Part1 does something.
+// Part1 returns the sum of the values of all cards in the input.
 func Part1() {
 	cards := readCards()
 	fmt.Printf("PART 1: %d\n", sumCardValues(cards))
 }
 
-// Part2 sums the gear ratios for all gears in the schematic.
+// Part2 returns the final number of cards the input cards are worth.
 func Part2() {
 	cards := readCards()
 	fmt.Printf("PART 2: %d\n", sumCardCounts(cards))
