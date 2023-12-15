@@ -1,11 +1,8 @@
 package day03
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
+	"github.com/ericbgarnick/aoc-go/util"
 )
 
 type schematic [][]rune
@@ -31,20 +28,12 @@ func Part2() {
 }
 
 func loadSchematic() schematic {
-	readFile, err := os.Open("day03/data.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer readFile.Close()
-
-	fileScanner := bufio.NewScanner(readFile)
-
-	fileScanner.Split(bufio.ScanLines)
+	fileLines := util.ScanFile("day03/data.txt")
 
 	var newSchematic schematic
-	for fileScanner.Scan() {
+	for _, line := range fileLines {
 		var newRow []rune
-		for _, symbol := range strings.Trim(fileScanner.Text(), "\n") {
+		for _, symbol := range line {
 			newRow = append(newRow, symbol)
 		}
 		newSchematic = append(newSchematic, newRow)
@@ -66,7 +55,7 @@ func sumPartNums() int {
 					number = append(number, row[i])
 				}
 				if hasAdjacentSymbol(r, c, len(number)) {
-					total += mustParseInt(string(number))
+					total += util.MustParseInt(string(number))
 				}
 				c += len(number)
 			}
@@ -145,11 +134,11 @@ func findAdjacentPartNums(r, c int) []int {
 	}
 	if isDigit(s[r][c+1]) {
 		ns = findNumSpan(r, c+1)
-		partNums = append(partNums, mustParseInt(string(s[r][ns.start:ns.end+1])))
+		partNums = append(partNums, util.MustParseInt(string(s[r][ns.start:ns.end+1])))
 	}
 	if isDigit(s[r][c-1]) {
 		ns = findNumSpan(r, c-1)
-		partNums = append(partNums, mustParseInt(string(s[r][ns.start:ns.end+1])))
+		partNums = append(partNums, util.MustParseInt(string(s[r][ns.start:ns.end+1])))
 	}
 	return partNums
 }
@@ -167,18 +156,18 @@ func partNumsForRow(r, c int) []int {
 	}
 	if isDigit(s[r][cIdx]) {
 		ns = findNumSpan(r, cIdx)
-		partNums = append(partNums, mustParseInt(string(s[r][ns.start:ns.end+1])))
+		partNums = append(partNums, util.MustParseInt(string(s[r][ns.start:ns.end+1])))
 		cIdx = ns.end + 2
 	} else if isDigit(s[r][cIdx+1]) {
 		ns = findNumSpan(r, cIdx+1)
-		partNums = append(partNums, mustParseInt(string(s[r][ns.start:ns.end+1])))
+		partNums = append(partNums, util.MustParseInt(string(s[r][ns.start:ns.end+1])))
 		cIdx = ns.end + 2
 	} else {
 		cIdx += 2
 	}
 	if cIdx == c+1 && isDigit(s[r][cIdx]) {
 		ns = findNumSpan(r, cIdx)
-		partNums = append(partNums, mustParseInt(string(s[r][ns.start:ns.end+1])))
+		partNums = append(partNums, util.MustParseInt(string(s[r][ns.start:ns.end+1])))
 	}
 	return partNums
 }
@@ -202,12 +191,4 @@ func isDigit(symbol rune) bool {
 
 func isPartSymbol(symbol rune) bool {
 	return !(isDigit(symbol) || symbol == '.')
-}
-
-func mustParseInt(numStr string) int {
-	numInt, err := strconv.Atoi(numStr)
-	if err != nil {
-		panic(err)
-	}
-	return numInt
 }

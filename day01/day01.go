@@ -1,9 +1,8 @@
 package day01
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"github.com/ericbgarnick/aoc-go/util"
 	"regexp"
 	"strconv"
 )
@@ -23,19 +22,11 @@ func Part2() {
 }
 
 func solution(searchFunc func(string) (int, error)) int {
-	readFile, err := os.Open("day01/data.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer readFile.Close()
-
-	fileScanner := bufio.NewScanner(readFile)
-
-	fileScanner.Split(bufio.ScanLines)
+	fileLines := util.ScanFile("day01/data.txt")
 
 	var total int
-	for fileScanner.Scan() {
-		cVal, err := searchFunc(fileScanner.Text())
+	for _, line := range fileLines {
+		cVal, err := searchFunc(line)
 		if err != nil {
 			panic(err)
 		}

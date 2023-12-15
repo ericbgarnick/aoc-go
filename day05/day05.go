@@ -1,13 +1,10 @@
 package day05
 
 import (
-	"bufio"
 	"fmt"
+	"github.com/ericbgarnick/aoc-go/util"
 	"math"
-	"os"
 	"regexp"
-	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -96,18 +93,9 @@ func readInput(seedRanges bool) ([]seedRange, map[string]conversionMap) {
 		maps  = map[string]conversionMap{}
 		cm    conversionMap
 	)
-	readFile, err := os.Open("day05/data.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer readFile.Close()
+	fileLines := util.ScanFile("day05/data.txt")
 
-	fileScanner := bufio.NewScanner(readFile)
-
-	fileScanner.Split(bufio.ScanLines)
-
-	for fileScanner.Scan() {
-		line := strings.Trim(fileScanner.Text(), "\n")
+	for _, line := range fileLines {
 		if len(line) == 0 {
 			continue
 		}
@@ -117,15 +105,15 @@ func readInput(seedRanges bool) ([]seedRange, map[string]conversionMap) {
 			if seedRanges {
 				for startNumIdx := 0; startNumIdx < len(seedData); startNumIdx += 2 {
 					sr := seedRange{
-						startNumber: mustParseInt(seedData[startNumIdx]),
-						length:      mustParseInt(seedData[startNumIdx+1]),
+						startNumber: util.MustParseInt(seedData[startNumIdx]),
+						length:      util.MustParseInt(seedData[startNumIdx+1]),
 					}
 					seeds = append(seeds, sr)
 				}
 			} else {
 				for _, seedNum := range seedData {
 					sr := seedRange{
-						startNumber: mustParseInt(seedNum),
+						startNumber: util.MustParseInt(seedNum),
 						length:      1,
 					}
 					seeds = append(seeds, sr)
@@ -142,9 +130,9 @@ func readInput(seedRanges bool) ([]seedRange, map[string]conversionMap) {
 		default:
 			conversionData := digitsPattern.FindAllString(line, -1)
 			r := conversionRange{
-				destinationStart: mustParseInt(conversionData[0]),
-				sourceStart:      mustParseInt(conversionData[1]),
-				length:           mustParseInt(conversionData[2]),
+				destinationStart: util.MustParseInt(conversionData[0]),
+				sourceStart:      util.MustParseInt(conversionData[1]),
+				length:           util.MustParseInt(conversionData[2]),
 			}
 			cm.ranges = append(cm.ranges, r)
 		}
@@ -176,12 +164,4 @@ func getSeedLocation(seedNumber int, conversionMaps map[string]conversionMap) in
 		cm, ok = conversionMaps[r.resourceType]
 	}
 	return r.resourceNumber
-}
-
-func mustParseInt(numStr string) int {
-	numInt, err := strconv.Atoi(numStr)
-	if err != nil {
-		panic(err)
-	}
-	return numInt
 }

@@ -1,10 +1,9 @@
 package day04
 
 import (
-	"bufio"
 	"fmt"
+	"github.com/ericbgarnick/aoc-go/util"
 	"math"
-	"os"
 	"regexp"
 )
 
@@ -34,18 +33,10 @@ func Part2() {
 
 func readCards() []ScratchCard {
 	var cards []ScratchCard
-	readFile, err := os.Open("day04/data.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer readFile.Close()
+	fileLines := util.ScanFile("day04/data.txt")
 
-	fileScanner := bufio.NewScanner(readFile)
-
-	fileScanner.Split(bufio.ScanLines)
-
-	for fileScanner.Scan() {
-		cards = append(cards, parseCard(fileScanner.Text()))
+	for _, line := range fileLines {
+		cards = append(cards, parseCard(line))
 	}
 	return cards
 }
