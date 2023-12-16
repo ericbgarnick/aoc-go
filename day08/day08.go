@@ -13,7 +13,7 @@ var nodePattern = regexp.MustCompile(`[0-9A-Z]{3}`)
 
 type network map[string]node
 
-// Part1 ranks hands and produces the sum of rank*bid for each hand.
+// Part1 returns the number of steps taken from the starting node to the end node.
 func Part1() {
 	instructions, nw := loadMap()
 	numSteps := traverseMapSingle(instructions, nw, "AAA", func(s string) bool {
@@ -22,7 +22,8 @@ func Part1() {
 	fmt.Printf("PART 1: %d\n", numSteps)
 }
 
-// Part2 does something.
+// Part2 returns the number of steps required to get from all
+// starting nodes to simultaneously be on all ending nodes.
 func Part2() {
 	instructions, nw := loadMap()
 	numSteps := traverseMapMulti(instructions, nw)
