@@ -3,6 +3,7 @@ package day01
 import (
 	"bufio"
 	"fmt"
+	"github.com/ericbgarnick/aoc-go/util"
 	"os"
 	"regexp"
 	"sort"
@@ -59,16 +60,9 @@ func sumDifferences(fileScanner *bufio.Scanner) int {
 	var total int
 	for i, v1 := range l1 {
 		v2 := l2[i]
-		total += absInt(v2 - v1)
+		total += util.AbsInt(v2 - v1)
 	}
 	return total
-}
-
-func absInt(value int) int {
-	if value >= 0 {
-		return value
-	}
-	return -1 * value
 }
 
 func findSimilarity(fileScanner *bufio.Scanner) int {
