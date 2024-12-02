@@ -96,7 +96,7 @@ func readInput(seedRanges bool) ([]seedRange, map[string]conversionMap) {
 		maps  = map[string]conversionMap{}
 		cm    conversionMap
 	)
-	readFile, err := os.Open("day05/data.txt")
+	readFile, err := os.Open("y2023/day05/data.txt")
 	if err != nil {
 		panic(err)
 	}

@@ -31,7 +31,7 @@ func Part2() {
 }
 
 func loadSchematic() schematic {
-	readFile, err := os.Open("day03/data.txt")
+	readFile, err := os.Open("y2023/day03/data.txt")
 	if err != nil {
 		panic(err)
 	}

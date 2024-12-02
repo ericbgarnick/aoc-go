@@ -28,7 +28,7 @@ func Part2() {
 }
 
 func solution(valueFunc func(string) (int, error)) int {
-	readFile, err := os.Open("day02/data.txt")
+	readFile, err := os.Open("y2023/day02/data.txt")
 	if err != nil {
 		panic(err)
 	}

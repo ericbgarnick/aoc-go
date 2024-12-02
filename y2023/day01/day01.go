@@ -23,7 +23,7 @@ func Part2() {
 }
 
 func solution(searchFunc func(string) (int, error)) int {
-	readFile, err := os.Open("day01/data.txt")
+	readFile, err := os.Open("y2023/day01/data.txt")
 	if err != nil {
 		panic(err)
 	}

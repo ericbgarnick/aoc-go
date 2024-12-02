@@ -34,7 +34,7 @@ func Part2() {
 
 func readCards() []ScratchCard {
 	var cards []ScratchCard
-	readFile, err := os.Open("day04/data.txt")
+	readFile, err := os.Open("y2023/day04/data.txt")
 	if err != nil {
 		panic(err)
 	}
