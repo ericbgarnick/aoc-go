@@ -1,5 +1,9 @@
 package util
 
+import "regexp"
+
+var IntPattern = regexp.MustCompile(`\d+`)
+
 func AbsInt(value int) int {
 	if value >= 0 {
 		return value

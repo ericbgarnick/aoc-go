@@ -39,20 +39,13 @@ func solution(f func(scanner *bufio.Scanner) int) int {
 }
 
 func sumDifferences(fileScanner *bufio.Scanner) int {
-	numPattern := regexp.MustCompile(`\d+`)
 	var l1, l2 []int
 	for fileScanner.Scan() {
 		pair := fileScanner.Text()
-		values := numPattern.FindAllString(pair, -1)
-		v1, err := strconv.Atoi(values[0])
-		if err != nil {
-			panic(err)
-		}
+		values := util.IntPattern.FindAllString(pair, -1)
+		v1 := util.MustParseInt(values[0])
 		l1 = append(l1, v1)
-		v2, err := strconv.Atoi(values[1])
-		if err != nil {
-			panic(err)
-		}
+		v2 := util.MustParseInt(values[1])
 		l2 = append(l2, v2)
 	}
 	sort.Ints(l1)
