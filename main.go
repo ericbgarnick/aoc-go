@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+
 	"github.com/ericbgarnick/aoc-go/y2023"
 	"github.com/ericbgarnick/aoc-go/y2024"
 )
