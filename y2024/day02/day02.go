@@ -13,6 +13,8 @@ func Part1() {
 	fmt.Printf("PART 1: %d\n", total)
 }
 
+// Part2 counts the input data rows that are monotonically increasing or decreasing
+// within the given min/max differences after removing one level value from the row
 func Part2() {
 	total := countSafeReports(true)
 	fmt.Printf("PART 2: %d\n", total)
