@@ -18,8 +18,7 @@ func Part1() {
 // Part2 counts the occurrences in the grid of the string "MAS" crossing diagonally on "A".
 func Part2() {
 	grid := util.ScanFile(fileName)
-	word := "MAS"
-	fmt.Printf("Part 2: %d\n", countCrosses(grid, word))
+	fmt.Printf("Part 2: %d\n", countMASCrosses(grid))
 }
 
 type position struct {
@@ -59,12 +58,6 @@ func countOccurrences(grid []string, word string) int {
 			}
 		}
 	}
-	return total
-}
-
-func countCrosses(grid []string, word string) int {
-	var total int
-	// TODO: implement
 	return total
 }
 
@@ -178,4 +171,34 @@ func searchSouthwest(grid []string, word string, start position) bool {
 		curLetter++
 	}
 	return true
+}
+
+func countMASCrosses(grid []string) int {
+	var total int
+	for r, row := range grid {
+		for c := range row {
+			if row[c] == 'A' && hasMSDiagonals(grid, position{row: r, col: c}) {
+				total++
+			}
+		}
+	}
+	return total
+}
+
+func hasMSDiagonals(grid []string, middle position) bool {
+	if middle.row == 0 || middle.col == 0 {
+		return false
+	}
+	if middle.row+1 >= len(grid) || middle.col+1 >= len(grid[0]) {
+		return false
+	}
+	nw := grid[middle.row-1][middle.col-1]
+	ne := grid[middle.row-1][middle.col+1]
+	sw := grid[middle.row+1][middle.col-1]
+	se := grid[middle.row+1][middle.col+1]
+	if ((nw == 'M' || nw == 'S') && (se == 'M' || se == 'S') && nw != se) &&
+		((ne == 'M' || ne == 'S') && (sw == 'M' || sw == 'S') && ne != sw) {
+		return true
+	}
+	return false
 }
