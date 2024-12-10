@@ -2,6 +2,7 @@ package day06
 
 import (
 	"fmt"
+
 	"github.com/ericbgarnick/aoc-go/util"
 )
 
