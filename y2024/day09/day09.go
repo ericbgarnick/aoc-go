@@ -8,14 +8,15 @@ import (
 
 func Part1() {
 	diskMap := util.ScanAOCDataFile(2024, 9)[0]
-	fmt.Printf("Part 1: %d\n", CalculateChecksum(diskMap))
+	fmt.Printf("Part 1: %d\n", CalculateBlockChecksum(diskMap))
 }
 
 func Part2() {
-	fmt.Printf("Part 2: %s\n", "TODO")
+	diskMap := util.ScanAOCDataFile(2024, 9)[0]
+	fmt.Printf("Part 2: %d\n", CalculateFileChecksum(diskMap))
 }
 
-func CalculateChecksum(diskMap string) int {
+func CalculateBlockChecksum(diskMap string) int {
 	var (
 		isFile                                               bool
 		checksum, expandedIdx, blockIdx, expandedRevBlockIdx int
@@ -46,6 +47,54 @@ func CalculateChecksum(diskMap string) int {
 				expandedRevBlockIdx++
 				expandedIdx++
 			}
+		}
+		blockIdx++
+	}
+	return checksum
+}
+
+func CalculateFileChecksum(diskMap string) int {
+	var (
+		isFile                          bool
+		checksum, expandedIdx, blockIdx int
+		revBlockIdx                     = len(diskMap) - 1
+		revBlockLen                     = util.MustParseInt(diskMap[revBlockIdx : revBlockIdx+1])
+		movedIdx                        = make(map[int]bool)
+	)
+	for blockIdx < len(diskMap) {
+		isFile = !isFile
+		blockLen := util.MustParseInt(diskMap[blockIdx : blockIdx+1])
+		if isFile && !movedIdx[blockIdx] {
+			blockID := blockIdx / 2
+			for range blockLen {
+				checksum += blockID * expandedIdx
+				expandedIdx++
+			}
+		} else if !movedIdx[blockIdx] {
+			revBlockIdx = len(diskMap) - 1
+			revBlockLen = util.MustParseInt(diskMap[revBlockIdx : revBlockIdx+1])
+			for blockLen > 0 {
+				for movedIdx[revBlockIdx] || (revBlockIdx > blockIdx && revBlockLen > blockLen) {
+					revBlockIdx -= 2
+					revBlockLen = util.MustParseInt(diskMap[revBlockIdx : revBlockIdx+1])
+				}
+				if revBlockLen <= blockLen && revBlockIdx > blockIdx {
+					blockID := revBlockIdx / 2
+					for range revBlockLen {
+						checksum += blockID * expandedIdx
+						expandedIdx++
+					}
+					movedIdx[revBlockIdx] = true
+					blockLen -= revBlockLen
+					revBlockIdx -= 2
+					revBlockLen = util.MustParseInt(diskMap[revBlockIdx : revBlockIdx+1])
+				} else {
+					expandedIdx += blockLen
+					blockLen = 0
+				}
+			}
+		} else {
+			expandedIdx += blockLen
 		}
 		blockIdx++
 	}
