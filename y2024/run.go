@@ -14,6 +14,7 @@ import (
 	"github.com/ericbgarnick/aoc-go/y2024/day09"
 	"github.com/ericbgarnick/aoc-go/y2024/day10"
 	"github.com/ericbgarnick/aoc-go/y2024/day11"
+	"github.com/ericbgarnick/aoc-go/y2024/day12"
 )
 
 func Run(dayNum int) {
@@ -62,6 +63,10 @@ func Run(dayNum int) {
 		fmt.Println("Day 11")
 		day11.Part1()
 		day11.Part2()
+	case 12:
+		fmt.Println("Day 12")
+		day12.Part1()
+		day12.Part2()
 	default:
 		fmt.Printf("No solution for day %d\n", dayNum)
 	}
