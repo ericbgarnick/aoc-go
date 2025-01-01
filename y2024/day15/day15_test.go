@@ -1,6 +1,7 @@
 package day15_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ericbgarnick/aoc-go/y2024/day15"
@@ -9,16 +10,28 @@ import (
 
 func TestNextPositionNarrow(t *testing.T) {
 	p := day15.NewPosition(3, 4)
-	tests := map[rune]*day15.Position{
+	fTests := map[rune]day15.Position{
 		'^': day15.NewPosition(2, 4),
 		'v': day15.NewPosition(4, 4),
 		'<': day15.NewPosition(3, 3),
 		'>': day15.NewPosition(3, 5),
 	}
-	for d, wantP := range tests {
-		t.Run(string(d), func(t *testing.T) {
-			gotP := day15.NextPositionNarrow(p, d)
-			assert.Equal(t, *wantP, *gotP)
+	for d, wantP := range fTests {
+		t.Run(fmt.Sprintf("forward %c", d), func(t *testing.T) {
+			gotP := day15.NextPositionNarrow(p, d, false)
+			assert.Equal(t, wantP, gotP)
+		})
+	}
+	rTests := map[rune]day15.Position{
+		'v': day15.NewPosition(2, 4),
+		'^': day15.NewPosition(4, 4),
+		'>': day15.NewPosition(3, 3),
+		'<': day15.NewPosition(3, 5),
+	}
+	for d, wantP := range rTests {
+		t.Run(fmt.Sprintf("reverse %c", d), func(t *testing.T) {
+			gotP := day15.NextPositionNarrow(p, d, true)
+			assert.Equal(t, wantP, gotP)
 		})
 	}
 }
