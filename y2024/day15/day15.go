@@ -99,7 +99,7 @@ func Run(wh *Warehouse, directions []rune) int {
 
 func (wh *Warehouse) MoveNarrow(d rune) {
 	// handle non-box movement
-	nextP := NextPositionNarrow(wh.robot, d, false)
+	nextP := NextPosition(wh.robot, d, false)
 	if nextObject := wh.floorPlan[nextP.row][nextP.col]; nextObject == Wall {
 		return
 	} else if nextObject == Floor {
@@ -111,7 +111,7 @@ func (wh *Warehouse) MoveNarrow(d rune) {
 
 	// handle box movement
 	for wh.IsBox(nextP) {
-		nextP = NextPositionNarrow(nextP, d, false)
+		nextP = NextPosition(nextP, d, false)
 	}
 
 	// boxes against a wall
@@ -123,7 +123,7 @@ func (wh *Warehouse) MoveNarrow(d rune) {
 	var lastP Position
 	for nextP != wh.robot {
 		lastP = nextP
-		nextP = NextPositionNarrow(nextP, d, true)
+		nextP = NextPosition(nextP, d, true)
 		wh.floorPlan[lastP.row][lastP.col] = wh.floorPlan[nextP.row][nextP.col]
 	}
 	wh.floorPlan[lastP.row][lastP.col] = Robot
@@ -131,7 +131,7 @@ func (wh *Warehouse) MoveNarrow(d rune) {
 	wh.floorPlan[nextP.row][nextP.col] = Floor
 }
 
-func NextPositionNarrow(p Position, d rune, reverse bool) Position {
+func NextPosition(p Position, d rune, reverse bool) Position {
 	if (d == '>' && !reverse) || (d == '<' && reverse) {
 		return NewPosition(p.row, p.col+1)
 	} else if (d == '<' && !reverse) || (d == '>' && reverse) {
@@ -159,6 +159,18 @@ func (wh *Warehouse) SumBoxCoordsNarrow() int {
 
 func (wh *Warehouse) MoveWide(d rune) {
 	if d == '<' || d == '>' {
+		wh.MoveNarrow(d)
+	}
+	var toMove []*Position
+	wh.GetBoxesToMove(toMove)
+}
 
+func (wh *Warehouse) GetBoxesToMove(toMove []*Position) {}
+
+func (wh *Warehouse) PushWideBoxes(toMove []*Position, d rune) {
+	for _, p := range toMove {
+		dest := NextPosition(*p, d, false)
+		wh.floorPlan[dest.row][dest.col] = wh.floorPlan[p.row][p.col]
+		wh.floorPlan[p.row][p.col] = Floor
 	}
 }
