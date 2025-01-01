@@ -174,11 +174,11 @@ func TestWarehouse_PushWideBoxes(t *testing.T) {
 		"#.[]..#",
 		"#..[].#",
 	})
-	toMove := []day15.Position{
-		day15.NewPosition(1, 2),
-		day15.NewPosition(1, 3),
-		day15.NewPosition(2, 3),
-		day15.NewPosition(2, 4),
+	toMove := map[day15.Position]bool{
+		day15.NewPosition(1, 2): true,
+		day15.NewPosition(1, 3): true,
+		day15.NewPosition(2, 3): true,
+		day15.NewPosition(2, 4): true,
 	}
 	wantFloorPlan := [][]rune{
 		{'#', '.', '[', ']', '.', '.', '#'},
@@ -209,12 +209,41 @@ func TestWarehouse_FindBoxesToMove(t *testing.T) {
 			day15.NewPosition(4, 6),
 			day15.NewPosition(4, 7),
 		}
-		var boxesToMove []day15.Position
+		var boxesToMove = make(map[day15.Position]bool)
 		canMove := wh.FindBoxesToMove(wh.RobotPosition(), &boxesToMove, '^')
 		assert.True(t, canMove)
 		assert.Equal(t, len(wantBoxesToMove), len(boxesToMove))
 		for _, wantP := range wantBoxesToMove {
-			assert.Contains(t, boxesToMove, wantP)
+			assert.True(t, boxesToMove[wantP])
+		}
+	})
+	t.Run("shared box can move", func(t *testing.T) {
+		rawFloorPlan := []string{
+			"##############",
+			"##......##..##",
+			"##....[]....##",
+			"##...[][]...##",
+			"##....[]....##",
+			"##.....@....##",
+			"##############",
+		}
+		wh := day15.NewWarehouse(rawFloorPlan)
+		wantBoxesToMove := []day15.Position{
+			day15.NewPosition(2, 6),
+			day15.NewPosition(2, 7),
+			day15.NewPosition(3, 5),
+			day15.NewPosition(3, 6),
+			day15.NewPosition(3, 7),
+			day15.NewPosition(3, 8),
+			day15.NewPosition(4, 6),
+			day15.NewPosition(4, 7),
+		}
+		var boxesToMove = make(map[day15.Position]bool)
+		canMove := wh.FindBoxesToMove(wh.RobotPosition(), &boxesToMove, '^')
+		assert.True(t, canMove)
+		assert.Equal(t, len(wantBoxesToMove), len(boxesToMove))
+		for _, wantP := range wantBoxesToMove {
+			assert.True(t, boxesToMove[wantP])
 		}
 	})
 	t.Run("large stack can move", func(t *testing.T) {
@@ -243,12 +272,12 @@ func TestWarehouse_FindBoxesToMove(t *testing.T) {
 			day15.NewPosition(5, 6),
 			day15.NewPosition(5, 7),
 		}
-		var boxesToMove []day15.Position
+		var boxesToMove = make(map[day15.Position]bool)
 		canMove := wh.FindBoxesToMove(wh.RobotPosition(), &boxesToMove, '^')
 		assert.True(t, canMove)
 		assert.Equal(t, len(wantBoxesToMove), len(boxesToMove))
 		for _, wantP := range wantBoxesToMove {
-			assert.Contains(t, boxesToMove, wantP)
+			assert.True(t, boxesToMove[wantP])
 		}
 	})
 	t.Run("small stack blocked", func(t *testing.T) {
@@ -262,7 +291,7 @@ func TestWarehouse_FindBoxesToMove(t *testing.T) {
 			"##############",
 		}
 		wh := day15.NewWarehouse(rawFloorPlan)
-		var boxesToMove []day15.Position
+		var boxesToMove = make(map[day15.Position]bool)
 		canMove := wh.FindBoxesToMove(wh.RobotPosition(), &boxesToMove, '^')
 		assert.False(t, canMove)
 	})

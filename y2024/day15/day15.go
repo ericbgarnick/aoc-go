@@ -3,18 +3,20 @@ package day15
 import (
 	"fmt"
 	"slices"
+	"sort"
 	"strings"
 
 	"github.com/ericbgarnick/aoc-go/util"
 )
 
 func Part1() {
-	wh, directions := loadData()
+	wh, directions := loadDataNarrow()
 	fmt.Printf("Part 1: %d\n", RunNarrow(wh, directions))
 }
 
 func Part2() {
-	fmt.Printf("Part 2: %s\n", "TODO")
+	wh, directions := loadDataWide()
+	fmt.Printf("Part 2: %d\n", RunWide(wh, directions))
 }
 
 const (
@@ -73,7 +75,7 @@ func (wh *Warehouse) GetFloorPlan() [][]rune {
 	return wh.floorPlan
 }
 
-func loadData() (*Warehouse, []rune) {
+func loadDataNarrow() (*Warehouse, []rune) {
 	rawData := util.ScanAOCDataFile(2024, 15)
 	var (
 		rawFloorPlan      []string
@@ -94,11 +96,51 @@ func loadData() (*Warehouse, []rune) {
 	return NewWarehouse(rawFloorPlan), directions
 }
 
+func loadDataWide() (*Warehouse, []rune) {
+	rawData := util.ScanAOCDataFile(2024, 15)
+	var (
+		rawFloorPlan      []string
+		directions        []rune
+		readingDirections bool
+	)
+	for _, row := range rawData {
+		row = strings.TrimSpace(row)
+		if len(row) == 0 {
+			readingDirections = true
+		}
+		if readingDirections {
+			directions = append(directions, []rune(row)...)
+		} else {
+			var floorRow []rune
+			for _, object := range row {
+				if object == Wall {
+					floorRow = append(floorRow, Wall, Wall)
+				} else if object == Floor {
+					floorRow = append(floorRow, Floor, Floor)
+				} else if object == Robot {
+					floorRow = append(floorRow, Robot, Floor)
+				} else {
+					floorRow = append(floorRow, DoubleBoxLeft, DoubleBoxRight)
+				}
+			}
+			rawFloorPlan = append(rawFloorPlan, string(floorRow))
+		}
+	}
+	return NewWarehouse(rawFloorPlan), directions
+}
+
 func RunNarrow(wh *Warehouse, directions []rune) int {
 	for _, d := range directions {
 		wh.MoveNarrow(d)
 	}
 	return wh.SumBoxCoordsNarrow()
+}
+
+func RunWide(wh *Warehouse, directions []rune) int {
+	for _, d := range directions {
+		wh.MoveWide(d)
+	}
+	return wh.SumBoxCoordsWide()
 }
 
 func (wh *Warehouse) MoveNarrow(d rune) {
@@ -166,17 +208,21 @@ func (wh *Warehouse) MoveWide(d rune) {
 		wh.MoveNarrow(d)
 		return
 	}
-	var toMove []Position
+	var toMove = make(map[Position]bool)
 	if wh.FindBoxesToMove(wh.robot, &toMove, d) {
+		//fmt.Printf("TO MOVE: %v\n", toMove)
 		wh.PushWideBoxes(toMove, d)
+		wh.floorPlan[wh.robot.row][wh.robot.col] = Floor
+		newRobotP := NextPosition(wh.robot, d, false)
+		wh.floorPlan[newRobotP.row][newRobotP.col] = Robot
+		wh.robot = NewPosition(newRobotP.row, newRobotP.col)
 	}
 }
 
-func (wh *Warehouse) FindBoxesToMove(currentP Position, toMove *[]Position, d rune) bool {
+func (wh *Warehouse) FindBoxesToMove(currentP Position, toMove *map[Position]bool, d rune) bool {
 	nextP := NextPosition(currentP, d, false)
 	// movement blocked
 	if wh.floorPlan[nextP.row][nextP.col] == Wall {
-		toMove = &[]Position{}
 		return false
 	}
 
@@ -193,14 +239,42 @@ func (wh *Warehouse) FindBoxesToMove(currentP Position, toMove *[]Position, d ru
 	} else if wh.floorPlan[nextP.row][nextP.col] == DoubleBoxRight {
 		boxOtherHalf = NextPosition(nextP, '<', false)
 	}
-	*toMove = append(*toMove, nextP, boxOtherHalf)
+	(*toMove)[nextP] = true
+	(*toMove)[boxOtherHalf] = true
 	return wh.FindBoxesToMove(nextP, toMove, d) && wh.FindBoxesToMove(boxOtherHalf, toMove, d)
 }
 
-func (wh *Warehouse) PushWideBoxes(toMove []Position, d rune) {
-	for _, p := range toMove {
+func (wh *Warehouse) PushWideBoxes(toMove map[Position]bool, d rune) {
+	var orderedPositions []Position
+	for p := range toMove {
+		orderedPositions = append(orderedPositions, p)
+	}
+	if d == '^' {
+		sort.Slice(orderedPositions, func(i, j int) bool {
+			return orderedPositions[i].row < orderedPositions[j].row
+		})
+	} else if d == 'v' {
+		sort.Slice(orderedPositions, func(i, j int) bool {
+			return orderedPositions[i].row > orderedPositions[j].row
+		})
+	} else {
+		panic(fmt.Sprintf("PushWideBoxes not valid for %c", d))
+	}
+	for _, p := range orderedPositions {
 		dest := NextPosition(p, d, false)
 		wh.floorPlan[dest.row][dest.col] = wh.floorPlan[p.row][p.col]
 		wh.floorPlan[p.row][p.col] = Floor
 	}
+}
+
+func (wh *Warehouse) SumBoxCoordsWide() int {
+	var total int
+	for r, row := range wh.floorPlan {
+		for c := range row {
+			if wh.floorPlan[r][c] == DoubleBoxLeft {
+				total += 100*r + c
+			}
+		}
+	}
+	return total
 }
