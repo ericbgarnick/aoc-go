@@ -10,7 +10,7 @@ import (
 
 func Part1() {
 	wh, directions := loadData()
-	fmt.Printf("Part 1: %d\n", Run(wh, directions))
+	fmt.Printf("Part 1: %d\n", RunNarrow(wh, directions))
 }
 
 func Part2() {
@@ -55,6 +55,10 @@ func NewWarehouse(rawFloorPlan []string) *Warehouse {
 	return &wh
 }
 
+func (wh *Warehouse) RobotPosition() Position {
+	return wh.robot
+}
+
 func (wh *Warehouse) Print() {
 	for _, row := range wh.floorPlan {
 		fmt.Println(string(row))
@@ -90,7 +94,7 @@ func loadData() (*Warehouse, []rune) {
 	return NewWarehouse(rawFloorPlan), directions
 }
 
-func Run(wh *Warehouse, directions []rune) int {
+func RunNarrow(wh *Warehouse, directions []rune) int {
 	for _, d := range directions {
 		wh.MoveNarrow(d)
 	}
@@ -160,16 +164,42 @@ func (wh *Warehouse) SumBoxCoordsNarrow() int {
 func (wh *Warehouse) MoveWide(d rune) {
 	if d == '<' || d == '>' {
 		wh.MoveNarrow(d)
+		return
 	}
-	var toMove []*Position
-	wh.GetBoxesToMove(toMove)
+	var toMove []Position
+	if wh.FindBoxesToMove(wh.robot, &toMove, d) {
+		wh.PushWideBoxes(toMove, d)
+	}
 }
 
-func (wh *Warehouse) GetBoxesToMove(toMove []*Position) {}
+func (wh *Warehouse) FindBoxesToMove(currentP Position, toMove *[]Position, d rune) bool {
+	nextP := NextPosition(currentP, d, false)
+	// movement blocked
+	if wh.floorPlan[nextP.row][nextP.col] == Wall {
+		toMove = &[]Position{}
+		return false
+	}
 
-func (wh *Warehouse) PushWideBoxes(toMove []*Position, d rune) {
+	// no next box to push
+	if wh.floorPlan[nextP.row][nextP.col] == Floor {
+		return true
+	}
+
+	// more boxes to check
+	var boxOtherHalf Position
+	if wh.floorPlan[nextP.row][nextP.col] == DoubleBoxLeft {
+		boxOtherHalf = NextPosition(nextP, '>', false)
+
+	} else if wh.floorPlan[nextP.row][nextP.col] == DoubleBoxRight {
+		boxOtherHalf = NextPosition(nextP, '<', false)
+	}
+	*toMove = append(*toMove, nextP, boxOtherHalf)
+	return wh.FindBoxesToMove(nextP, toMove, d) && wh.FindBoxesToMove(boxOtherHalf, toMove, d)
+}
+
+func (wh *Warehouse) PushWideBoxes(toMove []Position, d rune) {
 	for _, p := range toMove {
-		dest := NextPosition(*p, d, false)
+		dest := NextPosition(p, d, false)
 		wh.floorPlan[dest.row][dest.col] = wh.floorPlan[p.row][p.col]
 		wh.floorPlan[p.row][p.col] = Floor
 	}
