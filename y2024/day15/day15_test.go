@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNextPosition(t *testing.T) {
+func TestNextPositionNarrow(t *testing.T) {
 	p := day15.NewPosition(3, 4)
 	tests := map[rune]*day15.Position{
 		'^': day15.NewPosition(2, 4),
@@ -17,13 +17,13 @@ func TestNextPosition(t *testing.T) {
 	}
 	for d, wantP := range tests {
 		t.Run(string(d), func(t *testing.T) {
-			gotP := day15.NextPosition(p, d)
+			gotP := day15.NextPositionNarrow(p, d)
 			assert.Equal(t, *wantP, *gotP)
 		})
 	}
 }
 
-func TestWarehouse_Move(t *testing.T) {
+func TestWarehouse_MoveNarrow(t *testing.T) {
 	t.Run("shift robot", func(t *testing.T) {
 		floorPlan := []string{
 			"#.@.OOO.#",
@@ -34,7 +34,7 @@ func TestWarehouse_Move(t *testing.T) {
 				'#', '.', '.', '@', 'O', 'O', 'O', '.', '#',
 			},
 		}
-		wh.Move('>')
+		wh.MoveNarrow('>')
 		assert.Equal(t, wantFloorPlan, wh.GetFloorPlan())
 	})
 	t.Run("robot against a wall", func(t *testing.T) {
@@ -47,7 +47,7 @@ func TestWarehouse_Move(t *testing.T) {
 				'#', '.', '@', '#', 'O', 'O', 'O', '.', '#',
 			},
 		}
-		wh.Move('>')
+		wh.MoveNarrow('>')
 		assert.Equal(t, wantFloorPlan, wh.GetFloorPlan())
 	})
 	t.Run("push boxes", func(t *testing.T) {
@@ -60,7 +60,7 @@ func TestWarehouse_Move(t *testing.T) {
 				'#', '.', '.', '@', 'O', 'O', 'O', '.', '#',
 			},
 		}
-		wh.Move('>')
+		wh.MoveNarrow('>')
 		assert.Equal(t, wantFloorPlan, wh.GetFloorPlan())
 	})
 	t.Run("boxes against a wall", func(t *testing.T) {
@@ -73,7 +73,7 @@ func TestWarehouse_Move(t *testing.T) {
 				'#', '.', '@', 'O', 'O', 'O', '#', '.', '#',
 			},
 		}
-		wh.Move('>')
+		wh.MoveNarrow('>')
 		assert.Equal(t, wantFloorPlan, wh.GetFloorPlan())
 	})
 	t.Run("move vertically", func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestWarehouse_Move(t *testing.T) {
 				'#', '.', '@', '#',
 			},
 		}
-		wh.Move('v')
+		wh.MoveNarrow('v')
 		assert.Equal(t, wantFloorPlan, wh.GetFloorPlan())
 	})
 }

@@ -83,14 +83,14 @@ func loadData() (*Warehouse, []rune) {
 
 func Run(wh *Warehouse, directions []rune) int {
 	for _, d := range directions {
-		wh.Move(d)
+		wh.MoveNarrow(d)
 	}
-	return wh.SumBoxCoords()
+	return wh.SumBoxCoordsNarrow()
 }
 
-func (wh *Warehouse) Move(d rune) {
+func (wh *Warehouse) MoveNarrow(d rune) {
 	// handle non-box movement
-	nextP := NextPosition(wh.robot, d)
+	nextP := NextPositionNarrow(wh.robot, d)
 	if nextObject := wh.floorPlan[nextP.row][nextP.col]; nextObject == Wall {
 		return
 	} else if nextObject == Floor {
@@ -103,7 +103,7 @@ func (wh *Warehouse) Move(d rune) {
 	// handle box movement
 	nextRobotP := *nextP
 	for wh.floorPlan[nextP.row][nextP.col] == Box {
-		nextP = NextPosition(nextP, d)
+		nextP = NextPositionNarrow(nextP, d)
 	}
 
 	// boxes against a wall
@@ -118,7 +118,7 @@ func (wh *Warehouse) Move(d rune) {
 	wh.floorPlan[nextP.row][nextP.col] = Box
 }
 
-func NextPosition(p *Position, d rune) *Position {
+func NextPositionNarrow(p *Position, d rune) *Position {
 	if d == '>' {
 		return NewPosition(p.row, p.col+1)
 	} else if d == '<' {
@@ -132,7 +132,7 @@ func NextPosition(p *Position, d rune) *Position {
 	}
 }
 
-func (wh *Warehouse) SumBoxCoords() int {
+func (wh *Warehouse) SumBoxCoordsNarrow() int {
 	var total int
 	for r, row := range wh.floorPlan {
 		for c := range row {
